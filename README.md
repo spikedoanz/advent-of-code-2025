@@ -2,18 +2,25 @@
 
 ## Usage
 
+Quick and dirty
 ```
-pack run advent-of-code-2025 day1 1   # run day 1 part 1
-pack run advent-of-code-2025 day1 2   # run day 1 part 2
+# runs day 1 part 1
+./run.sh 1 1
 ```
 
-## REPL
+Which is just
+```
+pack exec src/Main.idr day1 1
+```
 
+With "proper build"
 ```
-pack repl advent-of-code-2025
-:module Day1
-part1 "test input"
+pack cleanbuild advent-of-code-2025 ; pack run advent-of-code-2025 day1 1   # run day 1 part 1
+pack cleanbuild advent-of-code-2025 ; pack run advent-of-code-2025 day1 2   # run day 1 part 2
 ```
+
+Note: to run yourself, please source your own input files from adventofcode.com and chuck them
+into the inputs/ directory
 
 ## Adding a new day
 
