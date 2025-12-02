@@ -1,0 +1,10 @@
+[custom.all.advent-of-code-2025]
+type = "local"
+path = "."
+ipkg = "advent-of-code-2025.ipkg"
+test = "test/test.ipkg"
+
+[custom.all.advent-of-code-2025-test]
+type = "local"
+path = "test"
+ipkg = "test.ipkg"
