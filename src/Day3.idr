@@ -3,36 +3,18 @@ module Day3
 import Data.List1
 import Data.String
 
-example = """
-987654321111111
-811111111111119
-234234234234278
-818181911112111
-"""
-
 charToNat : Char -> Maybe Nat
-charToNat c = case c of
-  '0' => Just 0 
-  '1' => Just 1 
-  '2' => Just 2 
-  '3' => Just 3 
-  '4' => Just 4 
-  '5' => Just 5 
-  '6' => Just 6 
-  '7' => Just 7 
-  '8' => Just 8 
-  '9' => Just 9 
-  _ => Nothing
+charToNat c =
+  if c >= '0' && c <= '9'
+    then Just (cast (ord c - ord '0'))
+    else Nothing
 
 getNums : String -> List (List Nat)
-getNums input = map (\x => mapMaybe charToNat x) (map unpack (lines input))
+getNums input = (\x => mapMaybe charToNat x) <$> unpack <$> (lines input)
 
 stackNums : Nat -> List Nat -> Nat
 stackNums acc []        = acc
 stackNums acc (x :: xs) = stackNums (acc * 10 + x) xs
-
-maximum : Ord a => List1 a -> a
-maximum (x ::: xs) = (foldl max x xs)
 
 findMaxIdx : List1 Nat -> (Nat, Integer)
 findMaxIdx xs = 
@@ -57,10 +39,12 @@ getLargestK (S k) xs =
   let (best, rest) = pickBest (S k) xs
   in best :: getLargestK k rest
 
+solve n input = show $ sum $ (stackNums 0) <$> (getLargestK n) <$> getNums input
+
 export
 part1 : String -> String
-part1 input = show $ sum $ (stackNums 0) <$> (getLargestK 2) <$> getNums input
+part1 input = solve 2 input
 
 export
 part2 : String -> String
-part2 input = show $ sum $ (stackNums 0) <$> (getLargestK 12) <$> getNums input
+part2 input = solve 12 input
