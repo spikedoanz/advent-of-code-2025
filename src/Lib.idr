@@ -23,3 +23,16 @@ export
 splitOn : String -> String -> List String
 splitOn div xs = map (pack) (splitOnChars (unpack div) (unpack xs))
 
+export
+isNum : Char -> Bool
+isNum '0' = True
+isNum '1' = True
+isNum '2' = True
+isNum '3' = True
+isNum '4' = True
+isNum '5' = True
+isNum '6' = True
+isNum '7' = True
+isNum '8' = True
+isNum '9' = True
+isNum _ = False
