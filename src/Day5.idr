@@ -5,30 +5,6 @@ import Data.List
 import Data.SortedSet
 import Lib
 
-example = """
-3-5
-10-14
-16-20
-12-18
-
-1
-5
-8
-11
-17
-32
-"""
-
-e1 = """
-3-5
-10-14
-16-20
-12-18
-"""
-
-epair : (Int, Int)
-epair = (3,5)
-
 getParts : String -> Maybe (String, String)
 getParts input =
   case (splitOn "\n\n" input) of
@@ -50,9 +26,6 @@ pairToRange r =
     Just r => fromList [(fst r) .. (snd r)]
     _ => empty
 
--- map over avail predicate for all pairs
--- foldr with or
-
 isIn : Int -> (Int, Int) -> Bool
 isIn i p = (fst p) <= i && i <= (snd p)
 
@@ -66,17 +39,29 @@ getAvailableIds : String -> List Int
 getAvailableIds s =
   case (splitOn "\n\n" s) of
     [left, right] => 
-      let bounds = getRanges left 
+      let bounds = getRanges left
           ids  = map (cast{to=Int}) (lines right)
       in filter (isAvailable bounds) ids
     _ => []
 
-boundToRange : (Int, Int) -> SortedSet Int
-boundToRange p = fromList [(fst p) .. (snd p)]
+mergeSorted : List (Int, Int) -> List (Int, Int)
+mergeSorted [] = []
+mergeSorted (x :: xs) = go [x] xs
+  where
+    go : List (Int, Int) -> List (Int, Int) -> List (Int, Int)
+    go p [] = p
+    go [] (y :: ys) = go [y] ys 
+    go ((lo1, hi1) :: acc) ((lo2, hi2) :: ys) =
+      if lo2 <= hi1 + 1
+         then go ((lo1, max hi1 hi2) :: acc) ys
+         else go ((lo2, hi2) :: (lo1, hi1) :: acc) ys
 
+rangeLen : (Int, Int) -> Int
+rangeLen (l, r) = r - l + 1
 
-allFreshIds : List (Int, Int) -> Nat
-allFreshIds l = length $ toList $ foldr union empty $ map boundToRange l
+-- default Ord for (Int, Int) sorts lexographically, so this works out
+countValids : List (Int, Int) -> Int
+countValids l = sum $ map rangeLen $ mergeSorted $ sort l 
 
 export
 part1 : String -> String
@@ -86,6 +71,5 @@ export
 part2 : String -> String
 part2 input =
   case (splitOn "\n\n" input) of
-    [left, right] => cast $ allFreshIds $ getRanges left
+    [left, right] => cast $ countValids $ getRanges left
     _ => ""
-
