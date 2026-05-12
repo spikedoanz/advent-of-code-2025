@@ -50,24 +50,33 @@ pairToRange r =
     Just r => fromList [(fst r) .. (snd r)]
     _ => empty
 
-freshIds : String -> SortedSet Int
-freshIds s =
-  foldr union empty $
-    map (pairToRange . getPair) (lines s)
+-- map over avail predicate for all pairs
+-- foldr with or
 
-countAvailable : List Int -> SortedSet Int -> List Int
-countAvailable xs ss = filter (\n => contains n ss) xs
-  
+isIn : Int -> (Int, Int) -> Bool
+isIn i p = (fst p) <= i && i <= (snd p)
+
+or : Bool -> Bool -> Bool
+or a b = a || b
+
+isAvailable : List (Int, Int) -> Int -> Bool
+isAvailable l i = foldr or False $ map (isIn i) l
 
 getAvailableIds : String -> List Int
 getAvailableIds s =
   case (splitOn "\n\n" s) of
     [left, right] => 
-      let fids = freshIds left 
+      let bounds = getRanges left 
           ids  = map (cast{to=Int}) (lines right)
-      in countAvailable ids fids
+      in filter (isAvailable bounds) ids
     _ => []
 
+boundToRange : (Int, Int) -> SortedSet Int
+boundToRange p = fromList [(fst p) .. (snd p)]
+
+
+allFreshIds : List (Int, Int) -> Nat
+allFreshIds l = length $ toList $ foldr union empty $ map boundToRange l
 
 export
 part1 : String -> String
@@ -75,4 +84,8 @@ part1 input = cast $ length $ getAvailableIds input
 
 export
 part2 : String -> String
-part2 input = "part 2 works"
+part2 input =
+  case (splitOn "\n\n" input) of
+    [left, right] => cast $ allFreshIds $ getRanges left
+    _ => ""
+
